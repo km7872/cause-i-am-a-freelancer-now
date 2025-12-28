@@ -1,0 +1,12 @@
+1. I have created the OpenAPI key but I am getting the error "You exceeded your current quota, please check your plan and billing details. For more information on this error"
+I am currently on the free plan maybe that's the reason.
+
+2. I did my dev using the gemini api key, so maybe I can add that key as well in the .env file. According a new piece of code block needs to be added for document extraction  for gemini support --
+
+3. Need to discuss on the integration. my workflow
+    1. File Upload: User uploads a file.
+    2. Sanitization: You generate a unique collection_name based on the file ID or filename (Chroma has naming restrictions).
+    3. Indexing: The file is chunked and embedded into its dedicated collection.
+    4. Selection: When querying, the user (or your backend) must specify which collection_name to talk to.
+    5. RAG Chain: Initialize the RAG instance by pointing the retriever to that specific collection.
+
