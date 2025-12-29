@@ -7,6 +7,7 @@ app = FastAPI(
 )
 # Adding state variables
 app.state.qa_chain = None
+app.state.retriever = None
 
 app.include_router(router)
 
