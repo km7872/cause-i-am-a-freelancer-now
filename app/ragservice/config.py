@@ -13,3 +13,4 @@ CONTEXT:
 QUESTION: {question}
 
 ANSWER:"""
+FEEDBACK_CSV_FILE = "feedback.csv"
