@@ -1,9 +1,11 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, Request
 from app.models.question import Question
+from app.models.feedback import Feedback
 from app.pdfservice.pdf import extract_text_from_pdf
 from app.extractor.extractor import extract_fields
 from app.ragservice.filesetup import create_text_chunks, create_vector_store
 from app.ragservice.config import llm, template
+from app.ragservice.feedback import save_feedback_to_csv
 from langchain_classic.chains import RetrievalQA
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -85,4 +87,11 @@ def get_user_query(question: Question, request: Request):
         return {"response": response["result"]}
     else:
         return {"response": "No Answer found"}
+
+
+@router.post("/submit_feedback")
+def submit_feedback(feedback: Feedback):
+    #print(feedback.query, feedback.answer, feedback.feedback_type)
+    feedback_dict = feedback.model_dump()
+    save_feedback_to_csv(feedback_dict)
 
