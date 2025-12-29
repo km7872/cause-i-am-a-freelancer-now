@@ -5,6 +5,8 @@ app = FastAPI(
     title="Freelancer API",
     version="1.0.0"
 )
+# Adding state variables
+app.state.qa_chain = None
 
 app.include_router(router)
 
