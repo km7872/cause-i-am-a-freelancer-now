@@ -17,7 +17,7 @@ def escalate_to_email(query: str, reason: str):
     smtp_port = 587
 
 
-    msg = MIMEText(f"The contractor has query with respect to {query}. Looking forward to hearing from you")
+    msg = MIMEText(f"The contractor has query with respect to {query}. Looking forward to hearing from you. \n Best, \n User")
     msg["From"] = email
     msg["To"] = os.getenv("EMAIL_TO")
     msg["Subject"] = f"Help needed for user asked query - {query}"
@@ -27,7 +27,4 @@ def escalate_to_email(query: str, reason: str):
         server.login(email, password)
         server.send_message(msg)
 
-
-    print(f"📧 ESCALATION TRIGGERED: {reason}")
-    print(f"Query: {query}")
-    return f"Success: Sent escalation email regarding {query}"
+    return  f"Sent escalation email regarding {query}"
