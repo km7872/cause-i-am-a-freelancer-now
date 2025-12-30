@@ -71,17 +71,16 @@ async def extract_document(document_id: str):
 def get_user_query(question: Question, request: Request):
     qa_chain =  request.app.state.qa_chain
     retriever = request.app.state.retriever
-    print(question)
     user_query = question.question
 
-    # 1. Bind the tool to the LLM
+    #Bind the tool to the LLM
     llm_with_tools = llm.bind_tools([escalate_to_email])
     docs = retriever.invoke(user_query)
     context_str = "\n".join([d.page_content for d in docs]) if docs else "No documents found."
 
     ai_msg = llm_with_tools.invoke(f"Context: {context_str}\nQuestion: {user_query}")
 
-    # 4. Check if Gemini wants to call a tool
+    # Check if Gemini wants to call a tool
     if ai_msg.tool_calls:
         for tool_call in ai_msg.tool_calls:
             if tool_call["name"] == "escalate_to_email":
@@ -91,43 +90,11 @@ def get_user_query(question: Question, request: Request):
                 # Return the result immediately to the user
                 return {"response": tool_output}
 
-    # 5. If no tool was called, return the text answer
+    # If no tool was called, return the text answer
     return {"response": ai_msg.content}
-
-    # tools = [escalate_to_email]
-    # agent = create_tool_calling_agent(llm, tools, prompt)
-    # agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
-    #
-    # docs = retriever.invoke(user_query)
-    # context_str = "\n".join([d.page_content for d in docs]) if docs else "No documents found."
-    # if "No documents found" in context_str:
-    #
-    #     response = agent_executor.invoke({
-    #         "question": user_query,
-    #         "context": context_str
-    #     })
-    #
-    #     return {"response": response["output"]}
-    #
-    # else:
-    #
-    # # # 3. If docs exist, run the chain
-    #     chain = (
-    #             {"context": lambda x: docs, "question": RunnablePassthrough()}
-    #             | prompt
-    #             | llm
-    #     )
-    #
-    #     response = qa_chain.invoke({"query": user_query})
-    #     if response:
-    #         return {"response": response["result"]}
-    #     else:
-    #         return {"response": "No Answer found"}
-
 
 @router.post("/submit_feedback")
 def submit_feedback(feedback: Feedback):
-    #print(feedback.query, feedback.answer, feedback.feedback_type)
     feedback_dict = feedback.model_dump()
     save_feedback_to_csv(feedback_dict)
 
