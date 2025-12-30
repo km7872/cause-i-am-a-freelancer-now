@@ -1,11 +1,14 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, Request
+from langchain_classic.agents import create_tool_calling_agent, AgentExecutor
+
 from app.models.question import Question
 from app.models.feedback import Feedback
 from app.pdfservice.pdf import extract_text_from_pdf
 from app.extractor.extractor import extract_fields
 from app.ragservice.filesetup import create_text_chunks, create_vector_store
-from app.ragservice.config import llm, template
+from app.ragservice.config import llm, prompt
 from app.ragservice.feedback import save_feedback_to_csv
+from app.ragservice.email import escalate_to_email
 from langchain_classic.chains import RetrievalQA
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -16,7 +19,7 @@ import json
 
 router = APIRouter()
 doc_info = {}
-prompt = ChatPromptTemplate.from_template(template)
+# prompt = ChatPromptTemplate.from_template(template)
 
 @router.post("/upload")
 async def upload_document(request: Request, file: UploadFile = File(...)):
@@ -69,24 +72,56 @@ def get_user_query(question: Question, request: Request):
     qa_chain =  request.app.state.qa_chain
     retriever = request.app.state.retriever
     user_query = question.question
-    response = qa_chain.invoke({"query": user_query})
 
+    # 1. Bind the tool to the LLM
+    llm_with_tools = llm.bind_tools([escalate_to_email])
     docs = retriever.invoke(user_query)
-    if not docs:
-        return {"response": "No information available (Zero relevant chunks found)."}
+    context_str = "\n".join([d.page_content for d in docs]) if docs else "No documents found."
 
-    # 3. If docs exist, run the chain
-    chain = (
-            {"context": lambda x: docs, "question": RunnablePassthrough()}
-            | prompt
-            | llm
-    )
+    ai_msg = llm_with_tools.invoke(f"Context: {context_str}\nQuestion: {user_query}")
 
-    response = qa_chain.invoke({"query": user_query})
-    if response:
-        return {"response": response["result"]}
-    else:
-        return {"response": "No Answer found"}
+    # 4. Check if Gemini wants to call a tool
+    if ai_msg.tool_calls:
+        for tool_call in ai_msg.tool_calls:
+            if tool_call["name"] == "escalate_to_email":
+                # Manually run the function
+                tool_output = escalate_to_email.invoke(tool_call["args"])
+
+                # Return the result immediately to the user
+                return {"response": tool_output}
+
+    # 5. If no tool was called, return the text answer
+    return {"response": ai_msg.content}
+
+    # tools = [escalate_to_email]
+    # agent = create_tool_calling_agent(llm, tools, prompt)
+    # agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+    #
+    # docs = retriever.invoke(user_query)
+    # context_str = "\n".join([d.page_content for d in docs]) if docs else "No documents found."
+    # if "No documents found" in context_str:
+    #
+    #     response = agent_executor.invoke({
+    #         "question": user_query,
+    #         "context": context_str
+    #     })
+    #
+    #     return {"response": response["output"]}
+    #
+    # else:
+    #
+    # # # 3. If docs exist, run the chain
+    #     chain = (
+    #             {"context": lambda x: docs, "question": RunnablePassthrough()}
+    #             | prompt
+    #             | llm
+    #     )
+    #
+    #     response = qa_chain.invoke({"query": user_query})
+    #     if response:
+    #         return {"response": response["result"]}
+    #     else:
+    #         return {"response": "No Answer found"}
 
 
 @router.post("/submit_feedback")
