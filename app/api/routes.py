@@ -71,6 +71,7 @@ async def extract_document(document_id: str):
 def get_user_query(question: Question, request: Request):
     qa_chain =  request.app.state.qa_chain
     retriever = request.app.state.retriever
+    print(question)
     user_query = question.question
 
     # 1. Bind the tool to the LLM
