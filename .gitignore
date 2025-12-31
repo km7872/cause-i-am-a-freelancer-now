@@ -20,3 +20,15 @@ app/models/__pycache__/email.cpython-311.pyc
 app/models/__pycache__/feedback.cpython-311.pyc
 app/models/__pycache__/question.cpython-311.pyc
 app/pdfservice/__pycache__/pdf.cpython-311.pyc
+.idea/
+app/.env
+app/__pycache__/
+app/api/__pycache__/
+app/extractor/__pycache__/
+app/pdfservice/__pycache__/
+app/models/__pycache__/question.cpython-312.pyc
+app/ragservice/__pycache__/config.cpython-312.pyc
+app/ragservice/__pycache__/filesetup.cpython-312.pyc
+app/models/__pycache__/
+app/ragservice/__pycache__/
+app/db/__pycache__/
