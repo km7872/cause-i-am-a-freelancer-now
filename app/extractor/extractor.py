@@ -8,7 +8,7 @@ import re
 load_dotenv()
 
 # client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-client = Client(api_key=os.getenv("G_API_KEY"))
+client = Client(api_key=os.getenv("GOOGLE_API_KEY"))
 def safe_json_parse(content: str) -> dict:
     content = re.sub(r"```(?:json)?", "", content)
     content = content.replace("```", "").strip()
