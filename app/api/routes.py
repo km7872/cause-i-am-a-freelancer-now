@@ -13,7 +13,7 @@ from langchain_classic.chains import RetrievalQA
 from langchain_core.prompts import ChatPromptTemplate
 
 from langchain_core.runnables import RunnablePassthrough
-# from app.db.redis import redis_client
+from app.db.redis import redis_client
 import uuid
 import json
 
@@ -29,10 +29,11 @@ async def upload_document(request: Request, file: UploadFile = File(...)):
     document_id = str(uuid.uuid4())
 
     text = extract_text_from_pdf(file)
-    # redis_client.set(f"doc:{document_id}:text", text)
-    doc_info[document_id] = text
+    redis_client.set(f"doc:{document_id}:text", text)
+    # doc_info[document_id] = text
+    info = redis_client.get(f"doc:{document_id}:text")
     # create the embeddings of the text of the file
-    new_chunks = create_text_chunks(doc_info[document_id])
+    new_chunks = create_text_chunks(info)
     new_vector_store = create_vector_store(new_chunks, document_id)
     # new_retriever = new_vector_store.as_retriever(search_kwargs={"k": 3})
     # Need to test more with 0.7 threshold as well
@@ -52,7 +53,7 @@ async def upload_document(request: Request, file: UploadFile = File(...)):
 
 @router.post("/extract/{document_id}")
 async def extract_document(document_id: str):
-    # text = redis_client.get(f"doc:{document_id}:text")
+    text = redis_client.get(f"doc:{document_id}:text")
     text = doc_info.get(document_id)
 
     if not text:
@@ -60,10 +61,10 @@ async def extract_document(document_id: str):
 
     extracted = extract_fields(text)
 
-    # redis_client.set(
-    #     f"doc:{document_id}:extracted",
-    #     json.dumps(extracted)
-    # )
+    redis_client.set(
+        f"doc:{document_id}:extracted",
+        json.dumps(extracted)
+    )
 
     return extracted
 
