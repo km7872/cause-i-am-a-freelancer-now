@@ -19,3 +19,9 @@ POST /extract/{document_id} -> {    "start_date": "...",
                                     "company": "..."
                                     }
 
+
+Run backend by uvicorn app.main:app --reload in one cmd
+Run frontend 
+cd frontend
+npm install (only first time)
+npm run dev
