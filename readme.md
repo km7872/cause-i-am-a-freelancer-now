@@ -21,7 +21,27 @@ POST /extract/{document_id} -> {    "start_date": "...",
 
 
 Run backend by uvicorn app.main:app --reload in one cmd
+...............................................................
 Run frontend 
 cd frontend
 npm install (only first time)
 npm run dev
+
+
+Redis: 
+.............................................
+Create a .env file in the project root:
+
+REDIS_HOST=localhost
+REDIS_PORT=6379
+⚠️ .env is not committed. Each developer must create their own.
+(Optionally can also add GoogleAPIKEY here)
+
+To start redis: docker run -d -p 6379:6379 redis
+
+To stop Redis: docker stop redis
+
+To remove it: docker rm redis
+................................................
+
+
