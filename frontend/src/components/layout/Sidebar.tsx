@@ -21,7 +21,7 @@ const menuItems = [
   // { id: 'contracts', label: 'Contracts', icon: FileText },
   { id: 'chat', label: 'Chat with Contract', icon: MessageSquare },
   // { id: 'portfolio', label: 'Portfolio', icon: Briefcase },
-  { id: 'reminders', label: 'Reminders', icon: Bell },
+  // { id: 'reminders', label: 'Reminders', icon: Bell },
   // { id: 'settings', label: 'Settings', icon: Settings },
 ];
 

@@ -4,7 +4,7 @@ from langchain_classic.agents import create_tool_calling_agent, AgentExecutor
 from app.models.question import Question
 from app.models.feedback import Feedback
 from app.pdfservice.pdf import extract_text_from_pdf
-from app.extractor.extractor import extract_fields
+from app.extractor.extractor import extract_fields, safe_json_parse
 from app.ragservice.filesetup import create_text_chunks, create_vector_store
 from app.ragservice.config import llm, prompt
 from app.ragservice.feedback import save_feedback_to_csv
@@ -16,22 +16,38 @@ from langchain_core.runnables import RunnablePassthrough
 from app.db.redis import redis_client
 import uuid
 import json
+from datetime import datetime
 
 router = APIRouter()
-doc_info = {}
+# doc_info = {}
 # prompt = ChatPromptTemplate.from_template(template)
 
+FORMAT_DOCID_KEY = f"doc:{0}"
+
 @router.post("/upload")
-async def upload_document(request: Request, file: UploadFile = File(...)):
+async def upload_document(request: Request,file: UploadFile = File(...)):
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files allowed")
 
     document_id = str(uuid.uuid4())
 
     text = extract_text_from_pdf(file)
-    redis_client.set(f"doc:{document_id}:text", text)
+    # redis_client.set(f"doc:{document_id}:text", text)
+    
+    fields = extract_fields(text)
+    fields = {}
+    redis_client.hset(
+        FORMAT_DOCID_KEY.format(document_id),
+        mapping={
+            "text": text,
+            "fields": json.dumps(fields)
+        }
+    )
+    redis_client.sadd("docs:ids", document_id)
+
     # doc_info[document_id] = text
-    info = redis_client.get(f"doc:{document_id}:text")
+    # info = redis_client.get(f"doc:{document_id}:text")
+    info = redis_client.hget(FORMAT_DOCID_KEY.format(document_id), "text")
     # create the embeddings of the text of the file
     new_chunks = create_text_chunks(info)
     new_vector_store = create_vector_store(new_chunks, document_id)
@@ -50,23 +66,42 @@ async def upload_document(request: Request, file: UploadFile = File(...)):
     request.app.state.retriever = new_retriever
     return {"document_id": document_id}
 
+@router.get('/contracts')
+def get_contracts():
+    contracts = []
+
+    doc_ids = redis_client.smembers("docs:ids")
+    # print(doc_ids)
+
+    for doc_id in doc_ids:
+        # print(doc_id)
+        doc_id = doc_id
+        key = FORMAT_DOCID_KEY.format(doc_id)
+        fields = json.loads(redis_client.hget(key, "fields"))
+        status = 'active'
+        if "end_date" in fields and fields["end_date"]!="":
+            end_date = datetime.strptime(fields["end_date"], "%Y-%m-%d")
+            today = datetime.today()
+
+            # Add status
+            if end_date < today:
+                status = "expired"
+        fields["status"] = status
+
+        contract = {
+            "id": doc_id,
+            "fields": fields,
+        }
+
+        contracts.append(contract)
+
+    return contracts
 
 @router.post("/extract/{document_id}")
-async def extract_document(document_id: str):
-    text = redis_client.get(f"doc:{document_id}:text")
-    text = doc_info.get(document_id)
+async def extract_document(document_id: int):
+    fields = redis_client.hget(FORMAT_DOCID_KEY.format(document_id), "fields")
 
-    if not text:
-        raise HTTPException(status_code=404, detail="Document not found")
-
-    extracted = extract_fields(text)
-
-    redis_client.set(
-        f"doc:{document_id}:extracted",
-        json.dumps(extracted)
-    )
-
-    return extracted
+    return fields or {}
 
 @router.post("/user_query")
 def get_user_query(question: Question, request: Request):
