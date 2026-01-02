@@ -16,6 +16,7 @@ from langchain_core.runnables import RunnablePassthrough
 import uuid
 import json
 from datetime import datetime
+from app.db.redis import redis_client
 
 router = APIRouter()
 # doc_info = {}
