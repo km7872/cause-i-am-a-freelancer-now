@@ -127,7 +127,7 @@ export function DashboardView({ onTabChange }: DashboardViewProps) {
   };
 
   const handleExtendContract = (id: string) => {
-    onTabChange('chat', id, 'Help me draft an email for extension.'); // add prompt to draft email for ext
+    onTabChange('chat', id, 'Can you suggest a polite way to ask for an extension, (dont send an email)?'); // add prompt to draft email for ext
   };
 
   const handleDelete = async (id: string) => {
