@@ -109,7 +109,7 @@ useEffect(() => {
 
       const aiMessage: Message = {
         id: Date.now().toString(),
-        content: data.response,
+        content: data.response && data.response.length > 0 ? data.response[0].text : "Sorry, I couldn't find the answer.",
         role: "assistant",
         timestamp: new Date(),
       };
