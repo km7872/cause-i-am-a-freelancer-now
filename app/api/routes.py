@@ -52,8 +52,8 @@ async def upload_document(request: Request,file: UploadFile = File(...)):
     # redis_client.set(f"doc:{document_id}:text", text)
     
     
-    # fields = DUMMY_FIELDS
-    fields = extract_fields(text)
+    fields = DUMMY_FIELDS
+    # fields = extract_fields(text)
     redis_client.hset(
         FORMAT_DOCID_KEY.format(document_id),
         mapping={
@@ -161,7 +161,7 @@ def get_user_query(question: Question, request: Request):
                 return {"response": tool_output}
 
     # If no tool was called, return the text answer and store the result in cache
-    store_in_redis(user_query, ai_msg.content)
+    store_in_redis(user_query, ai_msg.content[0]['text'])
     return {"response": ai_msg.content}
 
 @router.post("/submit_feedback")

@@ -106,10 +106,11 @@ useEffect(() => {
         body: JSON.stringify({ question: currentInput, contract_id: selectedContract.id }),
       });
       const data = await response.json();
+      console.log(data);
 
       const aiMessage: Message = {
         id: Date.now().toString(),
-        content: data.response && data.response.length > 0 ? data.response[0].text : "Sorry, I couldn't find the answer.",
+        content: data.response ? data.response : "Sorry, I couldn't find the answer.",
         role: "assistant",
         timestamp: new Date(),
       };
