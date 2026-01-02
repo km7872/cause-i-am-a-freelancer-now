@@ -187,20 +187,20 @@ export function DashboardView({ onTabChange }: DashboardViewProps) {
           icon={FileText}
           delay={0.1}
         />
-        <StatsCard
+        {/* <StatsCard
           title="Ending Soon"
           value={endingSoon}
           subtitle="Within 30 days"
           icon={AlertTriangle}
           delay={0.2}
-        />
-        <StatsCard
+        /> */}
+        {/* <StatsCard
           title="Total Contracts"
           value={contracts.length}
           subtitle="All time"
           icon={Clock}
           delay={0.3}
-        />
+        /> */}
         <StatsCard
           title="Est. Monthly"
           value={`$${totalEarnings.toLocaleString()}`}
