@@ -49,7 +49,7 @@ async def upload_document(request: Request,file: UploadFile = File(...)):
     # info = redis_client.get(f"doc:{document_id}:text")
     info = redis_client.hget(FORMAT_DOCID_KEY.format(document_id), "text")
     # create the embeddings of the text of the file
-    new_chunks = create_text_chunks(text)
+    new_chunks = create_text_chunks(info)
     new_vector_store = create_vector_store(new_chunks, document_id)
     new_retriever = new_vector_store.as_retriever(
         search_type="similarity_score_threshold",
