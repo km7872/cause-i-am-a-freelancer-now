@@ -42,16 +42,17 @@ export function PortfolioView() {
 
   const handleAddEntry = () => {
     if (!newEntry.content.trim()) return;
+    // call API to save entry
     
-    const entry: PortfolioEntry = {
-      id: Date.now().toString(),
-      date: new Date().toISOString().split('T')[0],
-      content: newEntry.content,
-      tags: newEntry.tags.split(',').map(t => t.trim()).filter(Boolean),
-    };
+    // const entry: PortfolioEntry = {
+    //   id: Date.now().toString(),
+    //   date: new Date().toISOString().split('T')[0],
+    //   content: newEntry.content,
+    //   contractId: 'default',
+    // };
     
-    setEntries([entry, ...entries]);
-    setNewEntry({ content: '', tags: '' });
+    // setEntries([entry, ...entries]);
+    // setNewEntry({ content: '', tags: '' });
     setIsAdding(false);
   };
 
@@ -133,7 +134,7 @@ export function PortfolioView() {
               onChange={(e) => setNewEntry({ ...newEntry, content: e.target.value })}
               className="min-h-[120px] bg-secondary border-border"
             />
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <Tag className="w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder="Tags (comma separated): design, frontend, meeting"
@@ -141,7 +142,7 @@ export function PortfolioView() {
                 onChange={(e) => setNewEntry({ ...newEntry, tags: e.target.value })}
                 className="bg-secondary border-border"
               />
-            </div>
+            </div> */}
             <div className="flex gap-3">
               <Button variant="outline" onClick={() => setIsAdding(false)}>Cancel</Button>
               <Button variant="glow" onClick={handleAddEntry}>Save Entry</Button>

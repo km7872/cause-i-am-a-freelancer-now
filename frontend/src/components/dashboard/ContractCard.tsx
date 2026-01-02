@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Calendar, Building2, Clock, MessageSquare, Bell, MoreVertical } from 'lucide-react';
+import { Calendar, Building2, Clock, MessageSquare, Bell, MoreVertical, Trash } from 'lucide-react';
 import { Contract } from '@/types/contract';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -15,9 +15,12 @@ interface ContractCardProps {
   delay?: number;
   onChat?: (id: string) => void;
   onReminder?: (id: string) => void;
+  onExtension?: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
 
-export function ContractCard({ contract, delay = 0, onChat, onReminder }: ContractCardProps) {
+
+export function ContractCard({ contract, delay = 0, onChat, onReminder, onExtension, onDelete }: ContractCardProps) {
   const getStatusBadge = (status: Contract['status']) => {
     switch (status) {
       case 'active':
@@ -79,9 +82,17 @@ export function ContractCard({ contract, delay = 0, onChat, onReminder }: Contra
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Chat with Contract
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onReminder?.(contract.id)}>
+              {/* <DropdownMenuItem onClick={() => onReminder?.(contract.id)}>
                 <Bell className="w-4 h-4 mr-2" />
                 Set Reminder
+              </DropdownMenuItem> */}
+              <DropdownMenuItem onClick={() => onExtension?.(contract.id)}>
+                <Clock className="w-4 h-4 mr-2" />
+                Extend Contract
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onDelete?.(contract.id)}>
+                <Trash className="w-4 h-4 mr-2" />
+                Delete Contract
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -117,7 +128,7 @@ export function ContractCard({ contract, delay = 0, onChat, onReminder }: Contra
         )}
       </div>
 
-      {/* <div className="flex gap-2 mt-4 pt-4 border-t border-border">
+      <div className="flex gap-2 mt-4 pt-4 border-t border-border">
         <Button
           variant="glass"
           size="sm"
@@ -127,7 +138,7 @@ export function ContractCard({ contract, delay = 0, onChat, onReminder }: Contra
           <MessageSquare className="w-4 h-4" />
           Chat
         </Button>
-        <Button
+        {/* <Button
           variant="outline"
           size="sm"
           className="flex-1"
@@ -135,8 +146,26 @@ export function ContractCard({ contract, delay = 0, onChat, onReminder }: Contra
         >
           <Bell className="w-4 h-4" />
           Remind
+        </Button> */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex-1"
+          onClick={() => onExtension?.(contract.id)}
+        >
+          <Clock className="w-4 h-4" />
+          Extend
         </Button>
-      </div> */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex-1"
+          onClick={() => onDelete?.(contract.id)}
+        >
+          <Trash className="w-4 h-4" />
+          Delete
+        </Button>
+      </div>
     </motion.div>
   );
 }

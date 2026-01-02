@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Send, FileText, Bot, User, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { log } from "console";
+import { Contract } from "@/types/contract";
 
 interface Message {
   id: string;
@@ -13,14 +14,62 @@ interface Message {
   timestamp: Date;
 }
 
+interface ChatViewProps {
+  selectedContractId?: string | null;
+}
+
+
+
 const mockContracts = [
   { id: "1", name: "Senior Frontend Developer - TechStart Inc." },
   { id: "2", name: "UI/UX Consultant - Design Agency Co." },
   { id: "3", name: "React Developer - Startup Labs" },
 ];
 
-export function ChatView() {
-  const [selectedContract, setSelectedContract] = useState(mockContracts[0]);
+export function ChatView({ selectedContractId }: ChatViewProps) {
+  // const [selectedContract, setSelectedContract] = useState(mockContracts[0]);
+  const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
+  const [contracts, setContracts] = useState<Contract[]>([]);
+
+    const fetchContracts = async () => {
+        try {
+          const response = await fetch("http://127.0.0.1:8000/contracts/");
+          const data = await response.json();
+    
+          console.log("📄 Fetched contracts");
+    
+          const mappedContracts: Contract[] = data.map((c: any) => {
+            const fields =
+              typeof c.fields === "string" ? JSON.parse(c.fields) : c.fields;
+    
+            return {
+              id: c.id,
+              role: fields.position,
+              company: fields.company,
+              startDate: fields.start_date,
+              endDate: fields.end_date ?? "",
+              hourlyRate: fields.salary ? Number(fields.salary): 0,
+              status: fields.status,
+            };
+          });
+    
+          setContracts(mappedContracts);
+        } catch (error) {
+          console.error("Error fetching contracts:", error);
+        }
+      }
+  useEffect(() => {
+  fetchContracts();
+}, []);
+
+useEffect(() => {
+  if (selectedContractId && contracts.length > 0) {
+    const contract = contracts.find(c => c.id === selectedContractId) || contracts[0];
+    setSelectedContract(contract);
+    // console.log("Selected contract from ID:", contract);
+    selectedContractId = null;
+  }
+}, [contracts, selectedContractId]);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -52,7 +101,7 @@ export function ChatView() {
       const response = await fetch("http://localhost:8000/user_query", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: currentInput }),
+        body: JSON.stringify({ question: currentInput, contract_id: selectedContract.id }),
       });
       const data = await response.json();
 
@@ -88,19 +137,21 @@ export function ChatView() {
           Select Contract
         </h3>
         <div className="space-y-2">
-          {mockContracts.map((contract) => (
+          {contracts.map((contract) => (
             <button
               key={contract.id}
               onClick={() => setSelectedContract(contract)}
               className={cn(
                 "w-full p-3 rounded-lg text-left transition-all flex items-center gap-3",
-                selectedContract.id === contract.id
+                selectedContract?.id === contract.id
                   ? "bg-primary/20 border border-primary/30 text-foreground"
                   : "bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground"
               )}
             >
-              <FileText className="w-4 h-4 shrink-0" />
-              <span className="text-sm truncate">{contract.name}</span>
+              <FileText className="w-4 h-10 shrink-0" />
+              <span className="text-sm line-clamp-2">
+                {contract.role} at {contract.company} Contract
+              </span>
             </button>
           ))}
         </div>
@@ -122,7 +173,7 @@ export function ChatView() {
               Contract AI Assistant
             </h2>
             <p className="text-xs text-muted-foreground">
-              Ask anything about: {selectedContract.name}
+              Ask anything about: {selectedContract?.role} at {selectedContract?.company} Contract
             </p>
           </div>
         </div>

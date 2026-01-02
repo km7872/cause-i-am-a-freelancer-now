@@ -14,8 +14,8 @@ export interface PortfolioEntry {
   id: string;
   date: string;
   content: string;
-  tags: string[];
-  contractId?: string;
+  tags?: string[];
+  contractId: string;
 }
 
 export interface Reminder {
