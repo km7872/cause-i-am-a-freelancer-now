@@ -69,6 +69,7 @@ export function UploadContractModal({ isOpen, onClose, onSubmit }: UploadContrac
       body: data
     });
     console.log("POST FIRED");
+    onSubmit({});
 
     onClose(); // close AFTER successful upload
   } catch (error) {

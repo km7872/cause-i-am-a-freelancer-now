@@ -48,7 +48,7 @@ import { cn } from '@/lib/utils';
 // ];
 
 interface ContractsViewProps {
-  onTabChange: (tab: string) => void;
+  onTabChange: (tab: string, contractId?: string) => void;
 }
 
 export function ContractsView({ onTabChange }: ContractsViewProps) {
@@ -166,7 +166,7 @@ export function ContractsView({ onTabChange }: ContractsViewProps) {
             key={contract.id}
             contract={contract}
             delay={0.05 * index}
-            onChat={() => onTabChange('chat')}
+            onChat={() => onTabChange('chat', contract.id)}
             onReminder={() => onTabChange('reminders')}
           />
         ))}

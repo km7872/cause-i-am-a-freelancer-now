@@ -22,10 +22,21 @@ router = APIRouter()
 # doc_info = {}
 # prompt = ChatPromptTemplate.from_template(template)
 
-FORMAT_DOCID_KEY = f"doc:{0}"
+FORMAT_DOCID_KEY = "doc:{}"
+
+DUMMY_FIELDS = {
+    "start_date": "2023-01-01",
+    "start_date_str": "January 1, 2023",
+    "end_date": "2023-12-31",
+    "end_date_str": "December 31, 2023",
+    "position": "Software Engineer",
+    "company": "Parth Corp",
+    "salary": "50"
+}
 
 @router.post("/upload")
-async def upload_document(request: Request,file: UploadFile = File(...)):
+# async def upload_document(request: Request,file: UploadFile = File(...)):
+async def upload_document(file: UploadFile = File(...)):
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files allowed")
 
@@ -34,8 +45,9 @@ async def upload_document(request: Request,file: UploadFile = File(...)):
     text = extract_text_from_pdf(file)
     # redis_client.set(f"doc:{document_id}:text", text)
     
+    
+    # fields = DUMMY_FIELDS
     fields = extract_fields(text)
-    fields = {}
     redis_client.hset(
         FORMAT_DOCID_KEY.format(document_id),
         mapping={
@@ -43,26 +55,38 @@ async def upload_document(request: Request,file: UploadFile = File(...)):
             "fields": json.dumps(fields)
         }
     )
+
     redis_client.sadd("docs:ids", document_id)
 
     # doc_info[document_id] = text
     # info = redis_client.get(f"doc:{document_id}:text")
-    info = redis_client.hget(FORMAT_DOCID_KEY.format(document_id), "text")
-    # create the embeddings of the text of the file
-    new_chunks = create_text_chunks(info)
-    new_vector_store = create_vector_store(new_chunks, document_id)
-    new_retriever = new_vector_store.as_retriever(
-        search_type="similarity_score_threshold",
-        search_kwargs={'score_threshold': 0.1}  # Only keep chunks with >70% match
-    )
-    qa_chain = RetrievalQA.from_chain_type(
-        llm=llm,
-        chain_type="stuff",
-        retriever=new_retriever
-    )
-    request.app.state.qa_chain = qa_chain
-    request.app.state.retriever = new_retriever
+    # info = redis_client.hget(FORMAT_DOCID_KEY.format(document_id), "text")
+    # # create the embeddings of the text of the file
+    # new_chunks = create_text_chunks(info)
+    # new_vector_store = create_vector_store(new_chunks, document_id)
+    # new_retriever = new_vector_store.as_retriever(
+    #     search_type="similarity_score_threshold",
+    #     search_kwargs={'score_threshold': 0.1}  # Only keep chunks with >70% match
+    # )
+    # qa_chain = RetrievalQA.from_chain_type(
+    #     llm=llm,
+    #     chain_type="stuff",
+    #     retriever=new_retriever
+    # )
+    # request.app.state.qa_chain = qa_chain
+    # request.app.state.retriever = new_retriever
     return {"document_id": document_id}
+
+@router.delete("/delete_document/{document_id}")
+async def delete_document(document_id: str):
+    if redis_client.exists(FORMAT_DOCID_KEY.format(document_id)):
+        redis_client.hdel(FORMAT_DOCID_KEY.format(document_id), "text", "fields")
+        
+        # Remove the document ID from the set
+        redis_client.srem("docs:ids", document_id)
+        
+        return 200
+    return 404
 
 @router.get('/contracts')
 def get_contracts():
@@ -70,10 +94,11 @@ def get_contracts():
 
     doc_ids = redis_client.smembers("docs:ids")
     # print(doc_ids)
+    # print(type(doc_ids))
 
     for doc_id in doc_ids:
         # print(doc_id)
-        doc_id = doc_id
+        # print(type(doc_id))
         key = FORMAT_DOCID_KEY.format(doc_id)
         fields = json.loads(redis_client.hget(key, "fields"))
         status = 'active'
@@ -103,8 +128,25 @@ async def extract_document(document_id: int):
 
 @router.post("/user_query")
 def get_user_query(question: Question, request: Request):
-    qa_chain =  request.app.state.qa_chain
-    retriever = request.app.state.retriever
+    # TODO: to test
+    document_id = question.contract_id
+    info = redis_client.hget(FORMAT_DOCID_KEY.format(document_id), "text")
+    # create the embeddings of the text of the file
+    new_chunks = create_text_chunks(info)
+    new_vector_store = create_vector_store(new_chunks, document_id)
+    new_retriever = new_vector_store.as_retriever(
+        search_type="similarity_score_threshold",
+        search_kwargs={'score_threshold': 0.1}  # Only keep chunks with >70% match
+    )
+    qa_chain = RetrievalQA.from_chain_type(
+        llm=llm,
+        chain_type="stuff",
+        retriever=new_retriever
+    )
+    # request.app.state.qa_chain = qa_chain
+    # request.app.state.retriever = new_retriever
+    # qa_chain =  request.app.state.qa_chain
+    # retriever = request.app.state.retriever
     user_query = question.question
     # check if the user query is already cached
     cached_answer = retrieve_from_redis(user_query)

@@ -9,48 +9,49 @@ import { UploadContractModal } from '@/components/dashboard/UploadContractModal'
 import { Contract } from '@/types/contract';
 
 
-// const mockContracts: Contract[] = [
-//   {
-//     id: '1',
-//     role: 'Senior Frontend Developer',
-//     company: 'TechStart Inc.',
-//     startDate: '2024-01-15',
-//     endDate: '2025-03-15',
-//     hourlyRate: 85,
-//     status: 'active',
-//   },
-//   {
-//     id: '2',
-//     role: 'UI/UX Consultant',
-//     company: 'Design Agency Co.',
-//     startDate: '2024-06-01',
-//     endDate: '2025-01-25',
-//     hourlyRate: 95,
-//     status: 'ending-soon',
-//   },
-//   {
-//     id: '3',
-//     role: 'React Developer',
-//     company: 'Startup Labs',
-//     startDate: '2024-03-01',
-//     endDate: '2024-12-31',
-//     hourlyRate: 75,
-//     status: 'expired',
-//   },
-//   {
-//     id: '4',
-//     role: 'Technical Lead',
-//     company: 'Enterprise Solutions',
-//     startDate: '2024-09-01',
-//     endDate: '2025-09-01',
-//     hourlyRate: 120,
-//     status: 'active',
-//   },
-// ];
+const mockContracts: Contract[] = [
+  {
+    id: '1',
+    role: 'Senior Frontend Developer',
+    company: 'TechStart Inc.',
+    startDate: '2024-01-15',
+    endDate: '2025-03-15',
+    hourlyRate: 85,
+    status: 'active',
+  },
+  {
+    id: '2',
+    role: 'UI/UX Consultant',
+    company: 'Design Agency Co.',
+    startDate: '2024-06-01',
+    endDate: '2025-01-25',
+    hourlyRate: 95,
+    status: 'ending-soon',
+  },
+  {
+    id: '3',
+    role: 'React Developer',
+    company: 'Startup Labs',
+    startDate: '2024-03-01',
+    endDate: '2024-12-31',
+    hourlyRate: 75,
+    status: 'expired',
+  },
+  {
+    id: '4',
+    role: 'Technical Lead',
+    company: 'Enterprise Solutions',
+    startDate: '2024-09-01',
+    endDate: '2025-09-01',
+    hourlyRate: 120,
+    status: 'active',
+  },
+];
 
 interface DashboardViewProps {
-  onTabChange: (tab: string) => void;
+  onTabChange: (tab: string, contractId?: string, promptMsg?: string) => void;
 }
+
 console.log("📁 DASHBOARD VIEW FILE LOADED");
 
 export function DashboardView({ onTabChange }: DashboardViewProps) {
@@ -65,7 +66,7 @@ export function DashboardView({ onTabChange }: DashboardViewProps) {
       const response = await fetch("http://127.0.0.1:8000/contracts/");
       const data = await response.json();
 
-      // console.log("RAW:", data);
+      console.log("📄 Fetched contracts");
 
       const mappedContracts: Contract[] = data.map((c: any) => {
         const fields =
@@ -99,7 +100,7 @@ export function DashboardView({ onTabChange }: DashboardViewProps) {
   const endingSoon = contracts.filter(c => c.status === 'ending-soon').length;
   const totalEarnings = contracts.filter(c => c.status === 'active').reduce((acc, c) => acc + (c.hourlyRate || 0) * 160, 0);
 
-  const handleAddContract = (data: any) => {
+  const handleAddContract = async (data: any) => {
     // const newContract: Contract = {
     //   id: Date.now().toString(),
     //   role: data.role,
@@ -112,15 +113,48 @@ export function DashboardView({ onTabChange }: DashboardViewProps) {
     // };
     // setContracts([newContract, ...contracts]);
     fetchContracts();
+    //refresh this view
+    // onTabChange('dashboard');
+
   };
 
   const handleChat = (id: string) => {
-    onTabChange('chat');
+    onTabChange('chat', id);
   };
 
   const handleReminder = (id: string) => {
     onTabChange('reminders');
   };
+
+  const handleExtendContract = (id: string) => {
+    onTabChange('chat', id, 'Help me draft an email for extension.'); // add prompt to draft email for ext
+  };
+
+  const handleDelete = async (id: string) => {
+    const confirmed = window.confirm(
+    "Are you sure? This action cannot be undone."
+  );
+
+  if (!confirmed) {
+    // User clicked "Cancel"
+    return;
+  }
+    console.log("🗑️ Deleting contract");
+    try {
+      const response = await fetch("http://127.0.0.1:8000/delete_document/" + id, {
+        method: "DELETE"
+      });
+      const data = await response;
+      console.log("🗑️ Deleted contract");
+
+      // console.log("RAW:", data);
+
+      fetchContracts();
+    } catch (error) {
+      console.error("Error deleting contract:", error);
+    }
+  };
+
 
   return (
     <div className="space-y-8">
@@ -193,7 +227,9 @@ export function DashboardView({ onTabChange }: DashboardViewProps) {
               contract={contract}
               delay={0.1 * index}
               onChat={handleChat}
-              onReminder={handleReminder}
+              onExtension={handleExtendContract}
+              // onReminder={handleReminder}
+              onDelete={handleDelete}
             />
           ))}
         </div>
