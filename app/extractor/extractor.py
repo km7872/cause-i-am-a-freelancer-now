@@ -25,10 +25,13 @@ def extract_fields(text: str) -> dict:
         Return ONLY valid JSON.
 
         Fields:
-        - start_date
-        - end_date
+        - start_date in yyyy-mm-dd format
+        - start_date_str - in month day, year format
+        - end_date in yyyy-mm-dd format
+        - end_date_str - in month day, year format
         - position
         - company
+        - salary - give hourly rate only, if salary is annual, divide by 2080, only numbers
 
         Text:
         \"\"\"
@@ -60,6 +63,6 @@ def extract_fields(text: str) -> dict:
     }
 )
     content = response.text
-    return content
-    # return safe_json_parse(content)
+    # return content
+    return safe_json_parse(content)
     # return {}

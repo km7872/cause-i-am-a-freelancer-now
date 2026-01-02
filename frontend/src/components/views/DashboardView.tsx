@@ -1,4 +1,5 @@
-import { useState } from 'react';
+"use client";
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, FileText, Clock, AlertTriangle, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,69 +8,110 @@ import { ContractCard } from '@/components/dashboard/ContractCard';
 import { UploadContractModal } from '@/components/dashboard/UploadContractModal';
 import { Contract } from '@/types/contract';
 
-const mockContracts: Contract[] = [
-  {
-    id: '1',
-    role: 'Senior Frontend Developer',
-    company: 'TechStart Inc.',
-    startDate: '2024-01-15',
-    endDate: '2025-03-15',
-    hourlyRate: 85,
-    status: 'active',
-  },
-  {
-    id: '2',
-    role: 'UI/UX Consultant',
-    company: 'Design Agency Co.',
-    startDate: '2024-06-01',
-    endDate: '2025-01-25',
-    hourlyRate: 95,
-    status: 'ending-soon',
-  },
-  {
-    id: '3',
-    role: 'React Developer',
-    company: 'Startup Labs',
-    startDate: '2024-03-01',
-    endDate: '2024-12-31',
-    hourlyRate: 75,
-    status: 'expired',
-  },
-  {
-    id: '4',
-    role: 'Technical Lead',
-    company: 'Enterprise Solutions',
-    startDate: '2024-09-01',
-    endDate: '2025-09-01',
-    hourlyRate: 120,
-    status: 'active',
-  },
-];
+
+// const mockContracts: Contract[] = [
+//   {
+//     id: '1',
+//     role: 'Senior Frontend Developer',
+//     company: 'TechStart Inc.',
+//     startDate: '2024-01-15',
+//     endDate: '2025-03-15',
+//     hourlyRate: 85,
+//     status: 'active',
+//   },
+//   {
+//     id: '2',
+//     role: 'UI/UX Consultant',
+//     company: 'Design Agency Co.',
+//     startDate: '2024-06-01',
+//     endDate: '2025-01-25',
+//     hourlyRate: 95,
+//     status: 'ending-soon',
+//   },
+//   {
+//     id: '3',
+//     role: 'React Developer',
+//     company: 'Startup Labs',
+//     startDate: '2024-03-01',
+//     endDate: '2024-12-31',
+//     hourlyRate: 75,
+//     status: 'expired',
+//   },
+//   {
+//     id: '4',
+//     role: 'Technical Lead',
+//     company: 'Enterprise Solutions',
+//     startDate: '2024-09-01',
+//     endDate: '2025-09-01',
+//     hourlyRate: 120,
+//     status: 'active',
+//   },
+// ];
 
 interface DashboardViewProps {
   onTabChange: (tab: string) => void;
 }
+console.log("📁 DASHBOARD VIEW FILE LOADED");
 
 export function DashboardView({ onTabChange }: DashboardViewProps) {
+  console.log("🧱 DASHBOARD VIEW RENDER");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [contracts, setContracts] = useState<Contract[]>(mockContracts);
+  const [loading, setLoading] = useState(true);
+  // const [contracts, setContracts] = useState<Contract[]>(mockContracts);
+  const [contracts, setContracts] = useState<Contract[]>([]);
+
+  const fetchContracts = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/contracts/");
+      const data = await response.json();
+
+      // console.log("RAW:", data);
+
+      const mappedContracts: Contract[] = data.map((c: any) => {
+        const fields =
+          typeof c.fields === "string" ? JSON.parse(c.fields) : c.fields;
+
+        return {
+          id: c.id,
+          role: fields.position,
+          company: fields.company,
+          startDate: fields.start_date,
+          endDate: fields.end_date ?? "",
+          hourlyRate: fields.salary ? Number(fields.salary): 0,
+          status: fields.status,
+        };
+      });
+
+      setContracts(mappedContracts);
+    } catch (error) {
+      console.error("Error fetching contracts:", error);
+    }
+  }
+
+  useEffect(() => {
+    // console.log("🔥 useEffect FIRED");
+  
+
+  fetchContracts();
+}, []);
 
   const activeContracts = contracts.filter(c => c.status === 'active').length;
   const endingSoon = contracts.filter(c => c.status === 'ending-soon').length;
-  const totalEarnings = contracts.reduce((acc, c) => acc + (c.hourlyRate || 0) * 160, 0);
+  const totalEarnings = contracts.filter(c => c.status === 'active').reduce((acc, c) => acc + (c.hourlyRate || 0) * 160, 0);
 
   const handleAddContract = (data: any) => {
-    const newContract: Contract = {
-      id: Date.now().toString(),
-      role: data.role,
-      company: data.company,
-      startDate: data.startDate,
-      endDate: data.endDate,
-      hourlyRate: data.hourlyRate ? parseFloat(data.hourlyRate) : undefined,
-      status: 'active',
-      description: data.description,
-    };
-    setContracts([newContract, ...contracts]);
+    // const newContract: Contract = {
+    //   id: Date.now().toString(),
+    //   role: data.role,
+    //   company: data.company,
+    //   startDate: data.startDate,
+    //   endDate: data.endDate,
+    //   hourlyRate: data.hourlyRate ? parseFloat(data.hourlyRate) : undefined,
+    //   status: 'active',
+    //   description: data.description,
+    // };
+    // setContracts([newContract, ...contracts]);
+    fetchContracts();
   };
 
   const handleChat = (id: string) => {
@@ -103,7 +145,7 @@ export function DashboardView({ onTabChange }: DashboardViewProps) {
       </motion.div>
 
       {/* Stats Grid */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
           title="Active Contracts"
           value={activeContracts}
@@ -130,21 +172,22 @@ export function DashboardView({ onTabChange }: DashboardViewProps) {
           value={`$${totalEarnings.toLocaleString()}`}
           subtitle="Based on hourly rates"
           icon={TrendingUp}
-          trend={{ value: 12, isPositive: true }}
+          // trend={{ value: 12, isPositive: true }}
           delay={0.4}
         />
-      </div> */}
+      </div>
 
       {/* Contracts Section */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-display font-semibold text-foreground">Your Contracts</h2>
-          <Button variant="ghost" size="sm" onClick={() => onTabChange('contracts')}>
+          {/* <Button variant="ghost" size="sm" onClick={() => onTabChange('contracts')}>
             View all
-          </Button>
+          </Button> */}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {contracts.slice(0, 4).map((contract, index) => (
+          {/* {contracts.slice(0, 4).map((contract, index) => ( */}
+            {contracts.map((contract, index) => (
             <ContractCard
               key={contract.id}
               contract={contract}

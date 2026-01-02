@@ -8,44 +8,44 @@ import { UploadContractModal } from '@/components/dashboard/UploadContractModal'
 import { Contract } from '@/types/contract';
 import { cn } from '@/lib/utils';
 
-const mockContracts: Contract[] = [
-  {
-    id: '1',
-    role: 'Senior Frontend Developer',
-    company: 'TechStart Inc.',
-    startDate: '2024-01-15',
-    endDate: '2025-03-15',
-    hourlyRate: 85,
-    status: 'active',
-  },
-  {
-    id: '2',
-    role: 'UI/UX Consultant',
-    company: 'Design Agency Co.',
-    startDate: '2024-06-01',
-    endDate: '2025-01-25',
-    hourlyRate: 95,
-    status: 'ending-soon',
-  },
-  {
-    id: '3',
-    role: 'React Developer',
-    company: 'Startup Labs',
-    startDate: '2024-03-01',
-    endDate: '2024-12-31',
-    hourlyRate: 75,
-    status: 'expired',
-  },
-  {
-    id: '4',
-    role: 'Technical Lead',
-    company: 'Enterprise Solutions',
-    startDate: '2024-09-01',
-    endDate: '2025-09-01',
-    hourlyRate: 120,
-    status: 'active',
-  },
-];
+// const mockContracts: Contract[] = [
+//   {
+//     id: '1',
+//     role: 'Senior Frontend Developer',
+//     company: 'TechStart Inc.',
+//     startDate: '2024-01-15',
+//     endDate: '2025-03-15',
+//     hourlyRate: 85,
+//     status: 'active',
+//   },
+//   {
+//     id: '2',
+//     role: 'UI/UX Consultant',
+//     company: 'Design Agency Co.',
+//     startDate: '2024-06-01',
+//     endDate: '2025-01-25',
+//     hourlyRate: 95,
+//     status: 'ending-soon',
+//   },
+//   {
+//     id: '3',
+//     role: 'React Developer',
+//     company: 'Startup Labs',
+//     startDate: '2024-03-01',
+//     endDate: '2024-12-31',
+//     hourlyRate: 75,
+//     status: 'expired',
+//   },
+//   {
+//     id: '4',
+//     role: 'Technical Lead',
+//     company: 'Enterprise Solutions',
+//     startDate: '2024-09-01',
+//     endDate: '2025-09-01',
+//     hourlyRate: 120,
+//     status: 'active',
+//   },
+// ];
 
 interface ContractsViewProps {
   onTabChange: (tab: string) => void;
@@ -53,7 +53,7 @@ interface ContractsViewProps {
 
 export function ContractsView({ onTabChange }: ContractsViewProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [contracts, setContracts] = useState<Contract[]>(mockContracts);
+  const [contracts, setContracts] = useState<Contract[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<'all' | 'active' | 'ending-soon' | 'expired'>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');

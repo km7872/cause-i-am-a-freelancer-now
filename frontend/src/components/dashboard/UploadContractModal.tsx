@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Upload, FileText, Calendar, Building2, Briefcase, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -49,29 +49,51 @@ export function UploadContractModal({ isOpen, onClose, onSubmit }: UploadContrac
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
-    onClose();
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  console.log("SUBMIT FIRED");
+
+  if (!formData.file) {
+    console.error("No file selected");
+    return;
+  }
+
+  const data = new FormData();
+  data.append("file", formData.file); 
+  console.log("ABOUT TO POST FIRED");
+
+  try {
+    
+    const response = await fetch("http://127.0.0.1:8000/upload", {
+      method: "POST",
+      body: data
+    });
+    console.log("POST FIRED");
+
+    onClose(); // close AFTER successful upload
+  } catch (error) {
+    console.error("Error uploading contract:", error);
+  }
+};
+
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
             onClick={onClose}
-          />
+          /> */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg max-h-[90vh] overflow-y-auto glass-card p-6 z-50"
+            className="fixed left-1/3 top-1/4 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg max-h-[90vh] overflow-y-auto glass-card p-6 z-50"
           >
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -123,94 +145,6 @@ export function UploadContractModal({ isOpen, onClose, onSubmit }: UploadContrac
                 </div>
               </div>
 
-              {/* Form Fields */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="role" className="flex items-center gap-2">
-                    <Briefcase className="w-4 h-4 text-muted-foreground" />
-                    Role
-                  </Label>
-                  <Input
-                    id="role"
-                    placeholder="e.g. Senior Developer"
-                    value={formData.role}
-                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                    className="bg-secondary border-border"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="company" className="flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-muted-foreground" />
-                    Company
-                  </Label>
-                  <Input
-                    id="company"
-                    placeholder="e.g. Tech Corp"
-                    value={formData.company}
-                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                    className="bg-secondary border-border"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="startDate" className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-muted-foreground" />
-                    Start Date
-                  </Label>
-                  <Input
-                    id="startDate"
-                    type="date"
-                    value={formData.startDate}
-                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                    className="bg-secondary border-border"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="endDate" className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-muted-foreground" />
-                    End Date
-                  </Label>
-                  <Input
-                    id="endDate"
-                    type="date"
-                    value={formData.endDate}
-                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                    className="bg-secondary border-border"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="hourlyRate" className="flex items-center gap-2">
-                  <DollarSign className="w-4 h-4 text-muted-foreground" />
-                  Hourly Rate (optional)
-                </Label>
-                <Input
-                  id="hourlyRate"
-                  type="number"
-                  placeholder="e.g. 75"
-                  value={formData.hourlyRate}
-                  onChange={(e) => setFormData({ ...formData, hourlyRate: e.target.value })}
-                  className="bg-secondary border-border"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="description">Notes (optional)</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Any additional notes about this contract..."
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="bg-secondary border-border min-h-[80px]"
-                />
-              </div>
 
               <div className="flex gap-3 pt-2">
                 <Button type="button" variant="outline" onClick={onClose} className="flex-1">

@@ -117,7 +117,7 @@ export function ContractCard({ contract, delay = 0, onChat, onReminder }: Contra
         )}
       </div>
 
-      <div className="flex gap-2 mt-4 pt-4 border-t border-border">
+      {/* <div className="flex gap-2 mt-4 pt-4 border-t border-border">
         <Button
           variant="glass"
           size="sm"
@@ -136,7 +136,7 @@ export function ContractCard({ contract, delay = 0, onChat, onReminder }: Contra
           <Bell className="w-4 h-4" />
           Remind
         </Button>
-      </div>
+      </div> */}
     </motion.div>
   );
 }
