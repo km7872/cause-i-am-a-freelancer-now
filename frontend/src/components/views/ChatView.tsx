@@ -16,6 +16,7 @@ interface Message {
 
 interface ChatViewProps {
   selectedContractId?: string | null;
+  promptMsg?: string | null;
 }
 
 
@@ -26,10 +27,11 @@ const mockContracts = [
   { id: "3", name: "React Developer - Startup Labs" },
 ];
 
-export function ChatView({ selectedContractId }: ChatViewProps) {
+export function ChatView({ selectedContractId, promptMsg }: ChatViewProps) {
   // const [selectedContract, setSelectedContract] = useState(mockContracts[0]);
   const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
   const [contracts, setContracts] = useState<Contract[]>([]);
+  const [inputValue, setInputValue] = useState(promptMsg || "");
 
     const fetchContracts = async () => {
         try {
@@ -79,7 +81,7 @@ useEffect(() => {
       timestamp: new Date(),
     },
   ]);
-  const [inputValue, setInputValue] = useState("");
+  
 
   const handleSend = async () => {
     if (!inputValue.trim()) return;

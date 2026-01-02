@@ -11,11 +11,15 @@ import { SettingsView } from '@/components/views/SettingsView';
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedContractId, setSelectedContractId] = useState<string | null>(null);
+  const [promptMsg, setpromptMsg] = useState<string | null>(null);
 
-  const handleTabChange = (tab: string, contractId?: string) => {
+  const handleTabChange = (tab: string, contractId?: string, promptMsg?: string) => {
     setActiveTab(tab);
     if (contractId) {
       setSelectedContractId(contractId);
+    }
+    if (promptMsg) {
+      setpromptMsg(promptMsg);
     }
   };
 
@@ -26,7 +30,7 @@ const Index = () => {
       // case 'contracts':
       //   return <ContractsView onTabChange={setActiveTab} />;
       case 'chat':
-        return <ChatView selectedContractId={selectedContractId}/>;
+        return <ChatView selectedContractId={selectedContractId} promptMsg={promptMsg} />;
       // case 'portfolio':
       //   return <PortfolioView />;
       case 'reminders':

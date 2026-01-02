@@ -49,7 +49,7 @@ const mockContracts: Contract[] = [
 ];
 
 interface DashboardViewProps {
-  onTabChange: (tab: string, contractId?: string) => void;
+  onTabChange: (tab: string, contractId?: string, promptMsg?: string) => void;
 }
 
 console.log("📁 DASHBOARD VIEW FILE LOADED");
@@ -127,7 +127,7 @@ export function DashboardView({ onTabChange }: DashboardViewProps) {
   };
 
   const handleExtendContract = (id: string) => {
-    onTabChange('chat', id); // add prompt to draft email for ext
+    onTabChange('chat', id, 'Help me draft an email for extension.'); // add prompt to draft email for ext
   };
 
   const handleDelete = async (id: string) => {
