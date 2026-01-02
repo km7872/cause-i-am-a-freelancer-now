@@ -52,8 +52,8 @@ async def upload_document(request: Request,file: UploadFile = File(...)):
     # redis_client.set(f"doc:{document_id}:text", text)
     
     
-    # fields = DUMMY_FIELDS
-    fields = extract_fields(text)
+    fields = DUMMY_FIELDS
+    # fields = extract_fields(text)
     redis_client.hset(
         FORMAT_DOCID_KEY.format(document_id),
         mapping={

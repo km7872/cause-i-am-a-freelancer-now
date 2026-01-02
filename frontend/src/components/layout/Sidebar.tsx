@@ -40,8 +40,8 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             <Zap className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="font-display font-bold text-lg text-foreground">ContractFlow</h1>
-            <p className="text-xs text-muted-foreground">Freelancer Hub</p>
+            <h1 className="font-display font-bold text-lg text-foreground">Panther AI</h1>
+            <p className="text-xs text-muted-foreground">AI for Contracts</p>
           </div>
         </div>
       </div>
