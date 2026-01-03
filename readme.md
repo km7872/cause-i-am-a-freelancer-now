@@ -5,7 +5,7 @@
 Panther AI is an AI-powered productivity ecosystem built specifically for freelancers and independent contractors to manage the complexities of multi-client work. It transforms static contract documents into an interactive command center, ensuring professionals stay ahead of deadlines and are always prepared for stakeholder meetings.
 
 ## 📸 Demo
-[TBD](https://drive.google.com/file/d/19Ea_pZvZ0ZDq_wKmXjQcVtYW0ob7y55-/view?usp=sharing)
+[Google Drive Link](https://drive.google.com/file/d/19Ea_pZvZ0ZDq_wKmXjQcVtYW0ob7y55-/view?usp=sharing)
 
 ## 📦 Installation steps
 Follow these steps to get Panther AI up and running:
