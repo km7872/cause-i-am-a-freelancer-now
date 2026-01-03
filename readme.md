@@ -165,6 +165,12 @@ To optimize performance, the system utilizes ***Redis as a semantic cache***. Th
 ### Chat Interface Output
 <img width="1673" height="949" alt="Image" src="https://github.com/user-attachments/assets/239a0ef4-beba-48a3-97f1-d4caee6ce2cf" />
 
+### Chat Interface output indicating email sent by email agent
+<img width="1673" height="949" alt="Image" src="https://github.com/user-attachments/assets/4245c531-573f-4518-8142-630e9043d38d" />
+
+### Email received by the contract provider
+<img width="1624" height="446" alt="Image" src="https://github.com/user-attachments/assets/bd4e04a2-cc5b-4627-9868-d7546ef55f69" />
+
 ### Dashboard Output
 <img width="1673" height="949" alt="Image" src="https://github.com/user-attachments/assets/50beb9bf-d639-4b13-9494-9b80782df0f1" />
 
