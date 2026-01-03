@@ -19,7 +19,7 @@ First, clone the project repository to your local machine and change the directo
 ### 2. Environment variables setup
 Create a .env file in the project root and add the below keys with their values.
 
-#### GEMINI API KEY
+#### GEMINI_API_KEY
     Steps to Generate a Gemini API Key
 
     1. Go to Google AI Studio: Open a web browser and go to the Google AI Studio API key page.
@@ -168,8 +168,9 @@ To optimize performance, the system utilizes ***Redis as a semantic cache***. Th
 ### Dashboard Output
 <img width="1673" height="949" alt="Image" src="https://github.com/user-attachments/assets/50beb9bf-d639-4b13-9494-9b80782df0f1" />
 
+## Notes
 
-To stop Redis: `docker stop redis` 
-
-To remove it: `docker rm redis`
+    To stop Redis: `docker stop redis` 
+    
+    To remove it: `docker rm redis`
 
