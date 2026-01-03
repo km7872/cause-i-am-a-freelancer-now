@@ -12,7 +12,7 @@ Follow these steps to get Panther AI up and running:
 
 ### 1. Clone the Repository
 
-First, clone the project repository to your local machine and change the directory to Codebuddy
+First, clone the project repository to your local machine and change the directory to cause-i-am-a-freelancer-now
 
 `git clone hhttps://github.com/km7872/cause-i-am-a-freelancer-now.git`
 
@@ -23,23 +23,31 @@ Create a .env file in the project root and add the below keys with their values.
     Steps to Generate a Gemini API Key
 
     1. Go to Google AI Studio: Open a web browser and go to the Google AI Studio API key page.
+
     2. Sign In: Log in with your Google account. You may need to review and accept the Terms of Service.
+
     3. Create API Key: Click the Create API key button.
+
     4. Select a Project: Select an existing Google Cloud project or create a new one. A new project will be created by default if you do not have any.
+
     5. Copy the Key: The API key will be generated and displayed. Copy this key immediately, as it will not be shown again for security reasons. Once copied you can paste the code in .env file
         "GEMINI_API_KEY=xxxxxxxx"
+
     6. Store Securely: Store your API key in a secure location, such as a password manager or as an environment variable in your development environment. 
 
 #### EMAIL_TO
     Your choice of destination email address
+
     EMAIL_TO="xxx@gmail.com"
 
 #### EMAIL_FROM
     Your choice of source email address
+
     EMAIL_FROM="xxx@gmail.com"
 
 #### EMAIL_PASS
     Steps to Generate the SMTP_PASS(in this case EMAIL_PASS)
+
     1. Go to your Google Account Settings.
     
     2. Navigate to Security.
@@ -63,15 +71,11 @@ Create a .env file in the project root and add the below keys with their values.
 #### REDIS_PORT
     REDIS_PORT=6379
     
-#### 3. Redis Setup
+### 3. Redis Setup
 To start redis: `docker run -d -p 6379:6379 redis`
 
-To stop Redis: `docker stop redis`
-
-To remove it: `docker rm redis`
-
 ### 4. Backend Setup
-1. Navigate into the cause-i-am-a-freelancer-no directory:
+1. Navigate into the cause-i-am-a-freelancer-now directory:
 `cd cause-i-am-a-freelancer-now`
 
 2. Create and activate a Python virtual environment:
@@ -99,7 +103,7 @@ On Windows, use `venv\Scripts\activate`
 ## 🛠 Usage
 Once both the backend and frontend servers are running, open your web browser and navigate to the frontend application (usually `http://localhost:8080`).
 
-*   **Submit the PDF Document** - Submit the contract by clicking on the "+ Add contract button"
+*   **Submit the PDF Document** - Submit the contract by clicking on the "+ Add contract button" on the top right corner.
 *   **Chat with your contract** - Click on any contract present on the dashboard and chat regarding your deliverables, pay and termination details
 
 ## Core Capabilities
@@ -123,8 +127,8 @@ A unique feedback loop where users log daily wins, challenges (rants), and progr
 Highly flexible cadence (daily, weekly, monthly) for progress check-ins, ensuring freelancers never walk into a meeting unprepared.
 
 ## ✨ Current Features that were implemented for the MVP
-- **Chat with the contract**: Users can interact with an AI agent to clarify information related to deliverables, pay, termination details, contract extensions etc. 
-- **Email support for escalation**: If the LLM cannot provide answer for the user query, an email agent will be instantiated to send email to the contract provider mentioning the user query in the email body.
+- **Chat with the contract**: Users can interact with the chat agent to clarify information related to deliverables, pay, termination details, contract extensions etc. 
+- **Email support for escalation**: If the chat agent cannot provide answer for the user query, an email agent will be instantiated to send email to the contract provider mentioning the user query in the email body.
 
 ## ✨ Future Features to be implemented
 - **Update Portfolio**: Users can add the work items they have been working on.
@@ -154,7 +158,6 @@ To optimize performance, the system utilizes ***Redis as a semantic cache***. Th
 
 ## Credits/Resources used
 * **Lovable** - For quickly developing the Frontend for our application
-* **Github ReadMe** - https://medium.com/@fulton_shaun/readme-rules-structure-style-and-pro-tips-faea5eb5d252
 * **Gemini** - Gemini LLM for answering the user queries
 
 ## Results
@@ -166,5 +169,7 @@ To optimize performance, the system utilizes ***Redis as a semantic cache***. Th
 <img width="1673" height="949" alt="Image" src="https://github.com/user-attachments/assets/50beb9bf-d639-4b13-9494-9b80782df0f1" />
 
 
+To stop Redis: `docker stop redis` 
 
+To remove it: `docker rm redis`
 
