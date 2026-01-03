@@ -170,7 +170,7 @@ To optimize performance, the system utilizes ***Redis as a semantic cache***. Th
 
 ## Notes
 
-    To stop Redis: `docker stop redis` 
+    To stop Redis: docker stop redis
     
-    To remove it: `docker rm redis`
+    To remove it: docker rm redis
 
