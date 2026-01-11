@@ -161,7 +161,7 @@ def get_user_query(question: Question, request: Request):
                 return {"response": tool_output}
 
     # If no tool was called, return the text answer and store the result in cache
-    store_in_redis(user_query, ai_msg.content[0]['text'])
+    store_in_redis(user_query, ai_msg.content)
     return {"response": ai_msg.content}
 
 @router.post("/submit_feedback")
