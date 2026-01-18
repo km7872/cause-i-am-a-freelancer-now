@@ -27,16 +27,16 @@ const Index = () => {
     switch (activeTab) {
       case 'dashboard':
         return <DashboardView onTabChange={handleTabChange} />;
-      // case 'contracts':
-      //   return <ContractsView onTabChange={setActiveTab} />;
+      case 'contracts':
+        return <ContractsView onTabChange={setActiveTab} />;
       case 'chat':
         return <ChatView selectedContractId={selectedContractId} promptMsg={promptMsg} />;
-      // case 'portfolio':
-      //   return <PortfolioView />;
+      case 'portfolio':
+        return <PortfolioView />;
       case 'reminders':
         return <RemindersView />;
-      // case 'settings':
-      //   return <SettingsView />;
+      case 'settings':
+        return <SettingsView />;
       default:
         return <DashboardView onTabChange={setActiveTab} />;
     }

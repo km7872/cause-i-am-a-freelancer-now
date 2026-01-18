@@ -1,4 +1,6 @@
+import os
 from fastapi import APIRouter, UploadFile, File, HTTPException, Request
+from fastapi_sso.sso.google import GoogleSSO
 from langchain_classic.agents import create_tool_calling_agent, AgentExecutor
 from app.models.question import Question
 from app.models.feedback import Feedback
@@ -10,13 +12,20 @@ from app.ragservice.feedback import save_feedback_to_csv
 from app.ragservice.email import escalate_to_email
 from langchain_classic.chains import RetrievalQA
 from app.db.redis import retrieve_from_redis, store_in_redis
+from app.security.security import create_access_token
 from langchain_core.prompts import ChatPromptTemplate
-
+from starlette.responses import RedirectResponse
 from langchain_core.runnables import RunnablePassthrough
 import uuid
 import json
 from datetime import datetime
 from app.db.redis import redis_client
+
+google_sso = GoogleSSO(
+    client_id=os.getenv("GOOGLE_CLIENT_ID"),
+    client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
+    redirect_uri="http://localhost:8000/auth/callback"
+)
 
 router = APIRouter()
 # doc_info = {}
@@ -168,3 +177,29 @@ def get_user_query(question: Question, request: Request):
 def submit_feedback(feedback: Feedback):
     feedback_dict = feedback.model_dump()
     save_feedback_to_csv(feedback_dict)
+
+
+@router.get("/auth/google/login")
+async def google_login():
+    """Step 1: Redirect user to Google"""
+    return await google_sso.get_login_redirect()
+
+
+@router.get("/auth/callback")
+async def google_callback(request: Request):
+    """Step 2: Google sends user back with a code"""
+    user = await google_sso.verify_and_process(request)
+
+    # Step 3: Check if user exists in your Postgres, if not, create them
+    # db_user = get_or_create_user(user.email)
+
+    # print(user.first_name)
+    # print(user.last_name)
+    # print(user.display_name)
+    # print(user.email)
+
+    # Step 4: Issue YOUR OWN JWT token
+    token = create_access_token(data={"sub": user.email, "first_name": user.first_name})
+
+    # Step 5: Redirect to your React dashboard with the token in the URL
+    return RedirectResponse(url=f"http://localhost:8080/auth-success?token={token}")

@@ -88,11 +88,8 @@ export function DashboardView({ onTabChange }: DashboardViewProps) {
       console.error("Error fetching contracts:", error);
     }
   }
-
   useEffect(() => {
     // console.log("🔥 useEffect FIRED");
-  
-
   fetchContracts();
 }, []);
 
@@ -154,7 +151,6 @@ export function DashboardView({ onTabChange }: DashboardViewProps) {
       console.error("Error deleting contract:", error);
     }
   };
-
 
   return (
     <div className="space-y-8">
