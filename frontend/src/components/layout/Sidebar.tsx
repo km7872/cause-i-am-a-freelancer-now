@@ -10,6 +10,9 @@ import {
   Zap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+
+
 
 interface SidebarProps {
   activeTab: string;
@@ -26,6 +29,7 @@ const menuItems = [
 ];
 
 export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
+  const { logout } = useAuth();
   return (
     <motion.aside
       initial={{ x: -20, opacity: 0 }}
@@ -88,7 +92,7 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             <p className="text-sm font-medium text-foreground truncate">John Doe</p>
             <p className="text-xs text-muted-foreground truncate">john@example.com</p>
           </div>
-          <button className="p-2 hover:bg-sidebar-accent rounded-lg transition-colors">
+          <button onClick={logout} className="p-2 hover:bg-sidebar-accent rounded-lg transition-colors">
             <LogOut className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>
